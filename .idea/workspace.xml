@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2a4997e7-04d2-45ac-8651-78c66e777e80" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/com/example/syncsched/ui/screens/auth/RegisterScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/com/example/syncsched/ui/screens/auth/LoginScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/com/example/syncsched/ui/screens/auth/LoginScreen.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

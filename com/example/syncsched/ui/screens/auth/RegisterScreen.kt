@@ -9,19 +9,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.syncsched.data.model.UserRole
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+fun RegisterScreen(
     viewModel: AuthViewModel,
-    onLoginSuccess: () -> Unit,
-    onNavigateToRegister: () -> Unit
+    onRegisterSuccess: () -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
     val authState = viewModel.authState
+    var expandedRole by remember { mutableStateOf(false) }
+    val roles = listOf(UserRole.HOD, UserRole.ADMIN)
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("SyncSched - Login") })
+            TopAppBar(title = { Text("SyncSched - Register") })
         }
     ) { paddingValues ->
         Column(
@@ -32,9 +35,10 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Welcome Back", style = MaterialTheme.typography.headlineMedium)
+            Text("Create Account", style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Dynamic Error Popup Banner for Duplicates or General Errors
             if (authState is AuthState.Error) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
@@ -52,6 +56,19 @@ fun LoginScreen(
             }
 
             OutlinedTextField(
+                value = viewModel.username,
+                onValueChange = {
+                    viewModel.username = it
+                    viewModel.clearError()
+                },
+                label = { Text("Username") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
                 value = viewModel.email,
                 onValueChange = {
                     viewModel.email = it
@@ -62,6 +79,52 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
             )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = viewModel.department,
+                onValueChange = {
+                    viewModel.department = it
+                    viewModel.clearError()
+                },
+                label = { Text("Department (e.g., Computer Science)") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Role Dropdown Selection
+            ExposedDropdownMenuBox(
+                expanded = expandedRole,
+                onExpandedChange = { expandedRole = !expandedRole },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = viewModel.role.name,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("User Role") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedRole) },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = expandedRole,
+                    onDismissRequest = { expandedRole = false }
+                ) {
+                    roles.forEach { role ->
+                        DropdownMenuItem(
+                            text = { Text(role.name) },
+                            onClick = {
+                                viewModel.role = role
+                                expandedRole = false
+                            }
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
@@ -79,7 +142,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { viewModel.login(onLoginSuccess) },
+                onClick = { viewModel.register(onRegisterSuccess) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = authState !is AuthState.Loading
             ) {
@@ -89,15 +152,14 @@ fun LoginScreen(
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
-                    Text("Login")
+                    Text("Register")
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            TextButton(onClick = onNavigateToRegister) {
-                Text("Don't have an account? Register")
+            TextButton(onClick = onNavigateToLogin) {
+                Text("Already have an account? Login")
             }
         }
     }
 }
-
